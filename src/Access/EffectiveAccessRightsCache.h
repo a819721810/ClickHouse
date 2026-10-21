@@ -4,11 +4,11 @@
 #include <Access/ImplicitExpansionSettings.h>
 #include <base/defines.h>
 #include <cstddef>
+#include <list>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <unordered_map>
-#include <vector>
 
 
 namespace DB
@@ -30,9 +30,7 @@ class AccessRights;
 ///
 /// Entries hold only weak references to the results, like the other *Cache classes in this
 /// directory: an entry stays valid exactly while some session still uses its results, and
-/// dead entries are swept periodically, so nothing is retained for users without sessions.
-/// (The user snapshot itself is NOT a liveness criterion - the access storage keeps the
-/// current entity alive regardless of sessions.)
+/// dead entries are removed incrementally without retaining their privilege trees.
 class EffectiveAccessRightsCache
 {
 public:
@@ -47,8 +45,7 @@ public:
         const std::shared_ptr<const EnabledRolesInfo> & roles_info,
         const ImplicitExpansionSettings & settings);
 
-    /// Stores the result calculated from these snapshots and settings,
-    /// replacing any previous entry for the same snapshots of this user.
+    /// Stores the result calculated from exactly these snapshots and settings.
     void store(const UUID & user_id, const UserPtr & user,
         const std::shared_ptr<const EnabledRolesInfo> & roles_info,
         const ImplicitExpansionSettings & settings,
@@ -56,36 +53,49 @@ public:
         const std::shared_ptr<const AccessRights> & access_with_implicit);
 
 private:
+    struct Key
+    {
+        UUID user_id;
+        const User * user;
+        const EnabledRolesInfo * roles_info;
+        ImplicitExpansionSettings settings;
+
+        bool operator ==(const Key &) const = default;
+    };
+
+    struct KeyHash
+    {
+        size_t operator()(const Key & key) const;
+    };
+
     struct Entry
     {
-        /// The exact snapshots the result was calculated from; weak, so that a user without
-        /// sessions retains nothing.
+        Key key;
+
+        /// Validate the weak snapshots as well as their addresses in the key, so an
+        /// allocator reusing the address of an expired snapshot cannot produce a hit.
         std::weak_ptr<const User> user;
         std::weak_ptr<const EnabledRolesInfo> roles_info;
-        ImplicitExpansionSettings settings;
 
         std::weak_ptr<const AccessRights> access;
         std::weak_ptr<const AccessRights> access_with_implicit;
     };
 
-    /// An entry is dead when no session holds its results anymore - a session holding the
-    /// results also holds the snapshots they were calculated from.
-    static bool isExpired(const Entry & entry) TSA_REQUIRES(mutex);
+    using Entries = std::list<Entry>;
 
-    /// Removes dead entries of all users. Runs after every SWEEP_INTERVAL stores; a sweep walks
-    /// all entries under the mutex, so with a huge number of users it is a periodic spike rather
-    /// than a strictly bounded cost per store. Accepted for now: entries die as soon as their
-    /// sessions drop, so a sweep usually has little to remove and stays cheap.
+    static bool isExpired(const Entry & entry) TSA_REQUIRES(mutex);
+    void eraseEntry(Entries::iterator entry) TSA_REQUIRES(mutex);
+
+    /// Examine a bounded number of entries per `store`. List iterators remain valid when
+    /// the hash index rehashes, and the cursor advances across both live and dead entries.
     void sweepExpiredEntries() TSA_REQUIRES(mutex);
 
-    static constexpr size_t SWEEP_INTERVAL = 1024;
+    static constexpr size_t SWEEP_BUDGET = 8;
 
     std::mutex mutex;
-    /// One entry per live (user snapshot, enabled roles snapshot) combination: sessions of the
-    /// same user can use different role sets (e.g. SET ROLE), and each combination keeps its
-    /// own entry so the combinations don't evict each other.
-    std::unordered_map<UUID, std::vector<Entry>> entries TSA_GUARDED_BY(mutex);
-    size_t stores_since_sweep TSA_GUARDED_BY(mutex) = 0;
+    Entries entries TSA_GUARDED_BY(mutex);
+    std::unordered_map<Key, Entries::iterator, KeyHash> index TSA_GUARDED_BY(mutex);
+    Entries::iterator next_entry_to_sweep TSA_GUARDED_BY(mutex) = entries.end();
 };
 
 }

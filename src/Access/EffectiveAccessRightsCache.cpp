@@ -1,12 +1,28 @@
 #include <Access/EffectiveAccessRightsCache.h>
+#include <boost/container_hash/hash.hpp>
+#include <algorithm>
 
 
 namespace DB
 {
 
+size_t EffectiveAccessRightsCache::KeyHash::operator()(const Key & key) const
+{
+    size_t hash = std::hash<UUID>{}(key.user_id);
+    boost::hash_combine(hash, key.user);
+    boost::hash_combine(hash, key.roles_info);
+    boost::hash_combine(hash, key.settings.select_from_system_db_requires_grant);
+    boost::hash_combine(hash, key.settings.select_from_information_schema_requires_grant);
+    boost::hash_combine(hash, key.settings.user_query_log_enabled);
+    boost::hash_combine(hash, key.settings.table_engines_require_grant);
+    return hash;
+}
+
+
 bool EffectiveAccessRightsCache::isExpired(const Entry & entry)
 {
-    return entry.access.expired() || entry.access_with_implicit.expired();
+    return entry.user.expired() || entry.roles_info.expired()
+        || entry.access.expired() || entry.access_with_implicit.expired();
 }
 
 
@@ -17,27 +33,20 @@ std::optional<EffectiveAccessRightsCache::Result> EffectiveAccessRightsCache::fi
     const ImplicitExpansionSettings & settings)
 {
     std::lock_guard lock{mutex};
-    auto it = entries.find(user_id);
-    if (it == entries.end())
+    auto it = index.find(Key{user_id, user.get(), roles_info.get(), settings});
+    if (it == index.end())
         return std::nullopt;
 
-    for (const Entry & entry : it->second)
-    {
-        auto stored_user = entry.user.lock();
-        auto stored_roles_info = entry.roles_info.lock();
-        auto stored_access = entry.access.lock();
-        auto stored_access_with_implicit = entry.access_with_implicit.lock();
+    const Entry & entry = *it->second;
+    auto stored_user = entry.user.lock();
+    auto stored_roles_info = entry.roles_info.lock();
+    auto stored_access = entry.access.lock();
+    auto stored_access_with_implicit = entry.access_with_implicit.lock();
 
-        if ((stored_user == user)
-            && (stored_roles_info == roles_info)
-            && (entry.settings == settings)
-            && stored_access
-            && stored_access_with_implicit)
-        {
-            return Result{std::move(stored_access), std::move(stored_access_with_implicit)};
-        }
-    }
+    if ((stored_user == user) && (stored_roles_info == roles_info) && stored_access && stored_access_with_implicit)
+        return Result{std::move(stored_access), std::move(stored_access_with_implicit)};
 
+    eraseEntry(it->second);
     return std::nullopt;
 }
 
@@ -52,53 +61,49 @@ void EffectiveAccessRightsCache::store(
 {
     std::lock_guard lock{mutex};
 
-    if (++stores_since_sweep >= SWEEP_INTERVAL)
+    Key key{user_id, user.get(), roles_info.get(), settings};
+    auto it = index.find(key);
+    if (it == index.end())
     {
-        stores_since_sweep = 0;
-        sweepExpiredEntries();
+        /// Allocate locally first so an exception leaves both containers unchanged.
+        /// `splice` preserves the stored iterator and does not allocate or throw.
+        Entries new_entry;
+        new_entry.push_back(Entry{key, user, roles_info, access, access_with_implicit});
+        index.emplace(key, new_entry.begin());
+        entries.splice(entries.end(), new_entry);
+    }
+    else
+    {
+        Entry & entry = *it->second;
+        entry.user = user;
+        entry.roles_info = roles_info;
+        entry.access = access;
+        entry.access_with_implicit = access_with_implicit;
     }
 
-    std::vector<Entry> & user_entries = entries[user_id];
+    sweepExpiredEntries();
+}
 
-    /// Drop dead entries of this user so its vector cannot grow unboundedly.
-    std::erase_if(user_entries, isExpired);
 
-    for (Entry & entry : user_entries)
-    {
-        auto stored_user = entry.user.lock();
-        auto stored_roles_info = entry.roles_info.lock();
-
-        /// Match by the snapshots only: if the settings have changed since this entry was
-        /// stored, `find` missed it because of them, and the entry must be replaced, not duplicated.
-        if ((stored_user == user) && (stored_roles_info == roles_info))
-        {
-            entry.settings = settings;
-            entry.access = access;
-            entry.access_with_implicit = access_with_implicit;
-            return;
-        }
-    }
-
-    Entry new_entry;
-    new_entry.user = user;
-    new_entry.roles_info = roles_info;
-    new_entry.settings = settings;
-    new_entry.access = access;
-    new_entry.access_with_implicit = access_with_implicit;
-    user_entries.push_back(std::move(new_entry));
+void EffectiveAccessRightsCache::eraseEntry(Entries::iterator entry)
+{
+    if (next_entry_to_sweep == entry)
+        ++next_entry_to_sweep;
+    index.erase(entry->key);
+    entries.erase(entry);
 }
 
 
 void EffectiveAccessRightsCache::sweepExpiredEntries()
 {
-    for (auto it = entries.begin(); it != entries.end();)
+    for (size_t remaining = std::min(SWEEP_BUDGET, entries.size()); remaining; --remaining)
     {
-        auto & user_entries = it->second;
-        std::erase_if(user_entries, isExpired);
-        if (user_entries.empty())
-            it = entries.erase(it);
-        else
-            ++it;
+        if (next_entry_to_sweep == entries.end())
+            next_entry_to_sweep = entries.begin();
+
+        auto entry = next_entry_to_sweep++;
+        if (isExpired(*entry))
+            eraseEntry(entry);
     }
 }
 
