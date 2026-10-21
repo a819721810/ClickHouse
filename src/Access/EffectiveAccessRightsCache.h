@@ -23,14 +23,13 @@ class AccessRights;
 /// (i.e. what ContextAccess::calculateAccessRights computes) so that all sessions
 /// of the same user share one calculation instead of doing one per session.
 ///
-/// The key is the identity of the immutable inputs: the exact User snapshot, the exact
-/// EnabledRolesInfo snapshot, and the server settings the implicit expansion depends on.
-/// Any change to the user or to a role produces new snapshots, so a hit always means the
-/// inputs are the very same objects - no explicit invalidation is needed.
+/// A hit requires the exact immutable `User` and `EnabledRolesInfo` snapshots and the
+/// settings the implicit expansion depends on. Any user or role change produces new
+/// snapshots, so no explicit invalidation is needed.
 ///
 /// Entries hold only weak references to the results, like the other *Cache classes in this
-/// directory: an entry stays valid exactly while some session still uses its results, and
-/// dead entries are removed incrementally without retaining their privilege trees.
+/// directory: results can only be reused while some context still holds them. Dead
+/// entries are removed incrementally without retaining their privilege trees.
 class EffectiveAccessRightsCache
 {
 public:
@@ -56,7 +55,6 @@ private:
     struct Key
     {
         UUID user_id;
-        const User * user;
         const EnabledRolesInfo * roles_info;
         ImplicitExpansionSettings settings;
 
@@ -72,7 +70,12 @@ private:
     {
         Key key;
 
-        /// Validate the weak snapshots as well as their addresses in the key, so an
+        /// Keep one user version per role/settings combination, reusing the allocated
+        /// entry when a user update refreshes all its contexts. A different `User`
+        /// snapshot is always a miss, even if another context still uses the old one.
+        const User * user_address;
+
+        /// Validate the weak snapshots as well as their raw addresses, so an
         /// allocator reusing the address of an expired snapshot cannot produce a hit.
         std::weak_ptr<const User> user;
         std::weak_ptr<const EnabledRolesInfo> roles_info;
@@ -90,7 +93,7 @@ private:
     /// the hash index rehashes, and the cursor advances across both live and dead entries.
     void sweepExpiredEntries() TSA_REQUIRES(mutex);
 
-    static constexpr size_t SWEEP_BUDGET = 8;
+    static constexpr size_t SWEEP_BUDGET = 2;
 
     std::mutex mutex;
     Entries entries TSA_GUARDED_BY(mutex);

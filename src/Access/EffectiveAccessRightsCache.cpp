@@ -9,7 +9,6 @@ namespace DB
 size_t EffectiveAccessRightsCache::KeyHash::operator()(const Key & key) const
 {
     size_t hash = std::hash<UUID>{}(key.user_id);
-    boost::hash_combine(hash, key.user);
     boost::hash_combine(hash, key.roles_info);
     boost::hash_combine(hash, key.settings.select_from_system_db_requires_grant);
     boost::hash_combine(hash, key.settings.select_from_information_schema_requires_grant);
@@ -33,11 +32,14 @@ std::optional<EffectiveAccessRightsCache::Result> EffectiveAccessRightsCache::fi
     const ImplicitExpansionSettings & settings)
 {
     std::lock_guard lock{mutex};
-    auto it = index.find(Key{user_id, user.get(), roles_info.get(), settings});
+    auto it = index.find(Key{user_id, roles_info.get(), settings});
     if (it == index.end())
         return std::nullopt;
 
     const Entry & entry = *it->second;
+    if (entry.user_address != user.get())
+        return std::nullopt;
+
     auto stored_user = entry.user.lock();
     auto stored_roles_info = entry.roles_info.lock();
     auto stored_access = entry.access.lock();
@@ -46,7 +48,6 @@ std::optional<EffectiveAccessRightsCache::Result> EffectiveAccessRightsCache::fi
     if ((stored_user == user) && (stored_roles_info == roles_info) && stored_access && stored_access_with_implicit)
         return Result{std::move(stored_access), std::move(stored_access_with_implicit)};
 
-    eraseEntry(it->second);
     return std::nullopt;
 }
 
@@ -61,20 +62,21 @@ void EffectiveAccessRightsCache::store(
 {
     std::lock_guard lock{mutex};
 
-    Key key{user_id, user.get(), roles_info.get(), settings};
+    Key key{user_id, roles_info.get(), settings};
     auto it = index.find(key);
     if (it == index.end())
     {
         /// Allocate locally first so an exception leaves both containers unchanged.
         /// `splice` preserves the stored iterator and does not allocate or throw.
         Entries new_entry;
-        new_entry.push_back(Entry{key, user, roles_info, access, access_with_implicit});
+        new_entry.push_back(Entry{key, user.get(), user, roles_info, access, access_with_implicit});
         index.emplace(key, new_entry.begin());
         entries.splice(entries.end(), new_entry);
     }
     else
     {
         Entry & entry = *it->second;
+        entry.user_address = user.get();
         entry.user = user;
         entry.roles_info = roles_info;
         entry.access = access;
