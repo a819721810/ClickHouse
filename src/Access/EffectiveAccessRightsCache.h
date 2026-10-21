@@ -83,7 +83,7 @@ private:
 
     using Entries = std::list<Entry>;
 
-    static bool isExpired(const Entry & entry) TSA_REQUIRES(mutex);
+    bool isExpired(const Entry & entry) const TSA_REQUIRES(mutex);
     void eraseEntry(Entries::iterator entry) TSA_REQUIRES(mutex);
 
     /// Examine a bounded number of entries per `store`. List iterators remain valid when

@@ -19,7 +19,7 @@ size_t EffectiveAccessRightsCache::KeyHash::operator()(const Key & key) const
 }
 
 
-bool EffectiveAccessRightsCache::isExpired(const Entry & entry)
+bool EffectiveAccessRightsCache::isExpired(const Entry & entry) const
 {
     return entry.user.expired() || entry.roles_info.expired()
         || entry.access.expired() || entry.access_with_implicit.expired();
