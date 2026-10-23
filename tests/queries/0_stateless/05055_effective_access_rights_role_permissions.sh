@@ -41,7 +41,7 @@ session_urls=()
 databases=("${CLICKHOUSE_DATABASE}" "${db}" "${db}" "${db}")
 roles=("${role_a}" "${role_a}" "${role_b}" "${role_a}, ${role_b}")
 for i in 0 1 2 3; do
-    url="${base_url}?user=${user}&database=${databases[$i]}&session_id=${CLICKHOUSE_TEST_UNIQUE_NAME}_${i}&session_timeout=3600"
+    url="${base_url}?user=${user}&database=${databases[$i]}&session_id=${CLICKHOUSE_TEST_UNIQUE_NAME}_${i}&session_timeout=60"
     ${CLICKHOUSE_CURL} -fsS "${url}" --data-binary "SET ROLE ${roles[$i]}"
     session_urls+=("${url}&session_check=1")
 done
@@ -82,3 +82,10 @@ admin "GRANT SELECT ON ${db}.target TO ${role_b}"
 check_sessions grant_b 0011
 admin "REVOKE SELECT ON ${db}.target FROM ${role_b}"
 check_sessions revoke_b 0000
+
+# Changing the user keeps the role snapshots unchanged. Exercise reuse of the
+# same cache slots for a new `User` snapshot in the established sessions.
+admin "GRANT SELECT ON ${db}.target TO ${user}"
+check_sessions user_grant 1111
+admin "REVOKE SELECT ON ${db}.target FROM ${user}"
+check_sessions user_revoke 0000
