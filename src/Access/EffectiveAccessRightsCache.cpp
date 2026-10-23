@@ -89,8 +89,6 @@ void EffectiveAccessRightsCache::store(
 
 void EffectiveAccessRightsCache::eraseEntry(Entries::iterator entry)
 {
-    if (next_entry_to_sweep == entry)
-        ++next_entry_to_sweep;
     index.erase(entry->key);
     entries.erase(entry);
 }

@@ -212,8 +212,9 @@ public:
     void setTableEnginesRequireGrant(bool enable) { table_engines_require_grant = enable; }
     bool doesTableEnginesRequireGrant() const { return table_engines_require_grant; }
 
-    /// Reads the settings the implicit expansion of access rights depends on
-    /// (see ContextAccess::addImplicitAccessRights) as one snapshot.
+    /// Reads the settings used by `ContextAccess::addImplicitAccessRights` once so
+    /// the calculation and cache key use the same values. Each flag is atomic;
+    /// this does not provide an atomic snapshot of all four flags.
     ImplicitExpansionSettings getImplicitExpansionSettings() const
     {
         ImplicitExpansionSettings settings;
