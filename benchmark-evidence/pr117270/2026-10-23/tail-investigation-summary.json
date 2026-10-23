@@ -1,0 +1,1081 @@
+{
+  "status": "passed",
+  "scope": "512 prepopulated users x 32 role combinations; actual timed concurrency is four readers and one writer. Separate diagnostic phases are never pooled as one A/B experiment.",
+  "phases": {
+    "diagnostic": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/diagnostic_86a4bf9eba",
+      "cases": 12,
+      "isolation_audits": 48
+    },
+    "controls": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/controls_462becd1c9",
+      "cases": 12,
+      "isolation_audits": 42
+    },
+    "gc_observation": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/mutex_32980edc8d",
+      "cases": 4,
+      "isolation_audits": 16
+    },
+    "mutex": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/mutex_ba113bec1f",
+      "cases": 4,
+      "isolation_audits": 15
+    },
+    "storage": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/storage_342bae83d5",
+      "cases": 8,
+      "isolation_audits": 26
+    },
+    "io_profile": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/io_profile_3610f717aa",
+      "cases": 4,
+      "isolation_audits": 16
+    },
+    "repeat": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/repeat_f126af5613",
+      "cases": 16,
+      "isolation_audits": 62
+    },
+    "serial": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/serial_777af07691",
+      "cases": 8,
+      "isolation_audits": 24
+    },
+    "interleaved": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/interleaved_40cd95eb23",
+      "cases": 4,
+      "isolation_audits": 14
+    },
+    "coalesced": {
+      "directory": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/coalesced_74adacf684",
+      "cases": 4,
+      "isolation_audits": 13
+    }
+  },
+  "unprofiled_repeat_and_serial": {
+    "repeat": {
+      "A": {
+        "reader": {
+          "pooled": {
+            "count": 65536,
+            "median": 0.469166,
+            "p95": 0.886583,
+            "p99": 1.46125,
+            "max": 51.541417
+          },
+          "block_p99_ms": [
+            0.800041,
+            0.864042,
+            0.8155,
+            1.89575,
+            1.951292,
+            0.934542,
+            0.871916,
+            0.8025
+          ]
+        },
+        "writer": {
+          "pooled": {
+            "count": 16384,
+            "median": 0.348625,
+            "p95": 0.722875,
+            "p99": 1.200708,
+            "max": 51.098334
+          },
+          "block_p99_ms": [
+            0.734542,
+            0.759375,
+            0.722791,
+            1.6065,
+            1.613125,
+            0.792416,
+            0.777167,
+            0.696708
+          ]
+        }
+      },
+      "B": {
+        "reader": {
+          "pooled": {
+            "count": 65536,
+            "median": 0.498209,
+            "p95": 1.208375,
+            "p99": 1.63225,
+            "max": 10.64925
+          },
+          "block_p99_ms": [
+            0.813667,
+            0.7425,
+            0.782541,
+            0.903417,
+            1.835042,
+            1.829875,
+            2.111542,
+            0.800584
+          ]
+        },
+        "writer": {
+          "pooled": {
+            "count": 16384,
+            "median": 0.393167,
+            "p95": 0.992291,
+            "p99": 1.385084,
+            "max": 5.364917
+          },
+          "block_p99_ms": [
+            0.7695,
+            0.659166,
+            0.7135,
+            0.773125,
+            1.689958,
+            1.535916,
+            1.679667,
+            0.751042
+          ]
+        }
+      }
+    },
+    "serial": {
+      "A": {
+        "reader": {
+          "pooled": {
+            "count": 32768,
+            "median": 0.346708,
+            "p95": 0.631833,
+            "p99": 0.779708,
+            "max": 14.181125
+          },
+          "block_p99_ms": [
+            0.764625,
+            0.817792,
+            0.78,
+            0.765375
+          ]
+        },
+        "writer": {
+          "pooled": {
+            "count": 8192,
+            "median": 0.3314165,
+            "p95": 0.622791,
+            "p99": 0.779208,
+            "max": 12.16375
+          },
+          "block_p99_ms": [
+            0.779416,
+            0.837708,
+            0.758167,
+            0.773333
+          ]
+        }
+      },
+      "B": {
+        "reader": {
+          "pooled": {
+            "count": 32768,
+            "median": 0.340833,
+            "p95": 0.609333,
+            "p99": 0.738625,
+            "max": 9.900958
+          },
+          "block_p99_ms": [
+            0.729333,
+            0.745625,
+            0.744375,
+            0.734459
+          ]
+        },
+        "writer": {
+          "pooled": {
+            "count": 8192,
+            "median": 0.3340835,
+            "p95": 0.6085,
+            "p99": 0.736583,
+            "max": 12.464875
+          },
+          "block_p99_ms": [
+            0.743917,
+            0.753,
+            0.721041,
+            0.722875
+          ]
+        }
+      }
+    }
+  },
+  "cache_lock_diagnostic": [
+    {
+      "block": 0,
+      "reader_p99_ms": 1.144667,
+      "writer_p99_ms": 1.023417,
+      "locks": {
+        "find": {
+          "wait_us": {
+            "count": 10240,
+            "median": 0.042,
+            "p95": 0.125,
+            "p99": 60.25,
+            "max": 233.083
+          },
+          "hold_us": {
+            "count": 10240,
+            "median": 0.708,
+            "p95": 7.541,
+            "p99": 60.0,
+            "max": 195.167
+          }
+        },
+        "store": {
+          "wait_us": {
+            "count": 2048,
+            "median": 0.042,
+            "p95": 0.084,
+            "p99": 12.125,
+            "max": 159.417
+          },
+          "hold_us": {
+            "count": 2048,
+            "median": 0.75,
+            "p95": 3.709,
+            "p99": 55.958,
+            "max": 174.625
+          }
+        }
+      },
+      "slow_writer_count": 30,
+      "slow_cache_us": {
+        "count": 30,
+        "median": 1.7915,
+        "p95": 58.042,
+        "p99": 126.417,
+        "max": 126.417
+      },
+      "slow_cache_fraction_percent": {
+        "count": 30,
+        "median": 0.15961745551121465,
+        "p95": 5.71701551342034,
+        "p99": 12.352442845878073,
+        "max": 12.352442845878073
+      },
+      "slowest_writer": {
+        "iteration": 1284,
+        "wall_ms": 3.532541,
+        "cache_wait_hold_us": 2.083,
+        "fraction_percent": 0.05896605304793348,
+        "before_first_cache_us": 3371.125
+      }
+    },
+    {
+      "block": 1,
+      "reader_p99_ms": 1.060667,
+      "writer_p99_ms": 0.856875,
+      "locks": {
+        "find": {
+          "wait_us": {
+            "count": 10240,
+            "median": 0.042,
+            "p95": 0.125,
+            "p99": 59.5,
+            "max": 212.416
+          },
+          "hold_us": {
+            "count": 10240,
+            "median": 0.625,
+            "p95": 4.916,
+            "p99": 51.792,
+            "max": 144.875
+          }
+        },
+        "store": {
+          "wait_us": {
+            "count": 2048,
+            "median": 0.042,
+            "p95": 0.084,
+            "p99": 21.667,
+            "max": 142.458
+          },
+          "hold_us": {
+            "count": 2048,
+            "median": 0.625,
+            "p95": 2.042,
+            "p99": 27.208,
+            "max": 108.625
+          }
+        }
+      },
+      "slow_writer_count": 9,
+      "slow_cache_us": {
+        "count": 9,
+        "median": 1.751,
+        "p95": 2.667,
+        "p99": 2.667,
+        "max": 2.667
+      },
+      "slow_cache_fraction_percent": {
+        "count": 9,
+        "median": 0.14105697110828302,
+        "p95": 0.18503165380279246,
+        "p99": 0.18503165380279246,
+        "max": 0.18503165380279246
+      },
+      "slowest_writer": {
+        "iteration": 1406,
+        "wall_ms": 2.231625,
+        "cache_wait_hold_us": 1.751,
+        "fraction_percent": 0.07846300341679269,
+        "before_first_cache_us": 2099.958
+      }
+    },
+    {
+      "block": 2,
+      "reader_p99_ms": 2.157334,
+      "writer_p99_ms": 2.092375,
+      "locks": {
+        "find": {
+          "wait_us": {
+            "count": 10240,
+            "median": 0.042,
+            "p95": 0.125,
+            "p99": 51.333,
+            "max": 466.083
+          },
+          "hold_us": {
+            "count": 10240,
+            "median": 0.583,
+            "p95": 7.042,
+            "p99": 51.0,
+            "max": 575.417
+          }
+        },
+        "store": {
+          "wait_us": {
+            "count": 2048,
+            "median": 0.042,
+            "p95": 0.125,
+            "p99": 24.417,
+            "max": 427.041
+          },
+          "hold_us": {
+            "count": 2048,
+            "median": 0.583,
+            "p95": 3.875,
+            "p99": 43.084,
+            "max": 169.667
+          }
+        }
+      },
+      "slow_writer_count": 78,
+      "slow_cache_us": {
+        "count": 78,
+        "median": 2.9375,
+        "p95": 171.417,
+        "p99": 470.332,
+        "max": 470.332
+      },
+      "slow_cache_fraction_percent": {
+        "count": 78,
+        "median": 0.21049501724739178,
+        "p95": 11.72049193834566,
+        "p99": 25.02231532514841,
+        "max": 25.02231532514841
+      },
+      "slowest_writer": {
+        "iteration": 810,
+        "wall_ms": 7.598125,
+        "cache_wait_hold_us": 1.709,
+        "fraction_percent": 0.022492391214937898,
+        "before_first_cache_us": 7498.958
+      }
+    },
+    {
+      "block": 3,
+      "reader_p99_ms": 0.770917,
+      "writer_p99_ms": 0.693083,
+      "locks": {
+        "find": {
+          "wait_us": {
+            "count": 10240,
+            "median": 0.042,
+            "p95": 0.125,
+            "p99": 54.583,
+            "max": 200.625
+          },
+          "hold_us": {
+            "count": 10240,
+            "median": 0.583,
+            "p95": 6.541,
+            "p99": 50.0,
+            "max": 133.792
+          }
+        },
+        "store": {
+          "wait_us": {
+            "count": 2048,
+            "median": 0.042,
+            "p95": 0.084,
+            "p99": 13.833,
+            "max": 138.041
+          },
+          "hold_us": {
+            "count": 2048,
+            "median": 0.542,
+            "p95": 1.25,
+            "p99": 38.75,
+            "max": 88.625
+          }
+        }
+      },
+      "slow_writer_count": 1,
+      "slow_cache_us": {
+        "count": 1,
+        "median": 1.334,
+        "p95": 1.334,
+        "p99": 1.334,
+        "max": 1.334
+      },
+      "slow_cache_fraction_percent": {
+        "count": 1,
+        "median": 0.026906010488100044,
+        "p95": 0.026906010488100044,
+        "p99": 0.026906010488100044,
+        "max": 0.026906010488100044
+      },
+      "slowest_writer": {
+        "iteration": 1913,
+        "wall_ms": 4.958,
+        "cache_wait_hold_us": 1.334,
+        "fraction_percent": 0.026906010488100044,
+        "before_first_cache_us": 467.583
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "variant": "A",
+      "block": 0,
+      "kinds": {
+        "CPU": {
+          "samples": 137,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 33,
+              "percent": 24.087591240875913
+            },
+            "disk_access_storage": {
+              "samples": 6,
+              "percent": 4.37956204379562
+            },
+            "effective_cache": {
+              "samples": 0,
+              "percent": 0.0
+            }
+          }
+        },
+        "Real": {
+          "samples": 5806,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 3345,
+              "percent": 57.612814330003445
+            },
+            "disk_access_storage": {
+              "samples": 164,
+              "percent": 2.8246641405442645
+            },
+            "effective_cache": {
+              "samples": 0,
+              "percent": 0.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "variant": "B",
+      "block": 1,
+      "kinds": {
+        "CPU": {
+          "samples": 185,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 46,
+              "percent": 24.864864864864863
+            },
+            "disk_access_storage": {
+              "samples": 15,
+              "percent": 8.108108108108109
+            },
+            "effective_cache": {
+              "samples": 1,
+              "percent": 0.5405405405405406
+            }
+          }
+        },
+        "Real": {
+          "samples": 5998,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 3510,
+              "percent": 58.51950650216739
+            },
+            "disk_access_storage": {
+              "samples": 227,
+              "percent": 3.784594864954985
+            },
+            "effective_cache": {
+              "samples": 1,
+              "percent": 0.016672224074691565
+            }
+          }
+        }
+      }
+    },
+    {
+      "variant": "B",
+      "block": 2,
+      "kinds": {
+        "CPU": {
+          "samples": 106,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 23,
+              "percent": 21.69811320754717
+            },
+            "disk_access_storage": {
+              "samples": 6,
+              "percent": 5.660377358490566
+            },
+            "effective_cache": {
+              "samples": 0,
+              "percent": 0.0
+            }
+          }
+        },
+        "Real": {
+          "samples": 5285,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 3139,
+              "percent": 59.39451277199622
+            },
+            "disk_access_storage": {
+              "samples": 162,
+              "percent": 3.065279091769158
+            },
+            "effective_cache": {
+              "samples": 1,
+              "percent": 0.01892147587511826
+            }
+          }
+        }
+      }
+    },
+    {
+      "variant": "A",
+      "block": 3,
+      "kinds": {
+        "CPU": {
+          "samples": 150,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 30,
+              "percent": 20.0
+            },
+            "disk_access_storage": {
+              "samples": 5,
+              "percent": 3.3333333333333335
+            },
+            "effective_cache": {
+              "samples": 0,
+              "percent": 0.0
+            }
+          }
+        },
+        "Real": {
+          "samples": 5642,
+          "inclusive_overlapping_groups": {
+            "parallel_formatting": {
+              "samples": 3247,
+              "percent": 57.5505140021269
+            },
+            "disk_access_storage": {
+              "samples": 174,
+              "percent": 3.0840127614321164
+            },
+            "effective_cache": {
+              "samples": 0,
+              "percent": 0.0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "within_run_controls": {
+    "interleaved": {
+      "flag": "parallel_formatting",
+      "cases": [
+        {
+          "variant": "A",
+          "block": 0,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.361021,
+                "p95": 0.661917,
+                "p99": 0.787917,
+                "max": 3.633959
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.45300050000000003,
+                "p95": 0.698042,
+                "p99": 0.823209,
+                "max": 1.065292
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.327688,
+                "p95": 0.6385,
+                "p99": 0.758166,
+                "max": 1.017208
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.3312495,
+                "p95": 0.592541,
+                "p99": 0.731625,
+                "max": 0.920292
+              }
+            }
+          }
+        },
+        {
+          "variant": "B",
+          "block": 1,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.3410415,
+                "p95": 0.614833,
+                "p99": 0.739084,
+                "max": 4.17575
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.425292,
+                "p95": 0.648917,
+                "p99": 0.756833,
+                "max": 3.160458
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.32958299999999996,
+                "p95": 0.588375,
+                "p99": 0.717333,
+                "max": 0.958666
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.3314375,
+                "p95": 0.570292,
+                "p99": 0.712542,
+                "max": 1.230292
+              }
+            }
+          }
+        },
+        {
+          "variant": "B",
+          "block": 2,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.34674950000000004,
+                "p95": 0.624209,
+                "p99": 0.74425,
+                "max": 1.027042
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.428583,
+                "p95": 0.674583,
+                "p99": 0.793,
+                "max": 2.099958
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.3305205,
+                "p95": 0.6075,
+                "p99": 0.733958,
+                "max": 1.382125
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.33170849999999996,
+                "p95": 0.586875,
+                "p99": 0.704083,
+                "max": 0.922792
+              }
+            }
+          }
+        },
+        {
+          "variant": "A",
+          "block": 3,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.35479150000000004,
+                "p95": 0.639583,
+                "p99": 0.783292,
+                "max": 1.216542
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.4474165,
+                "p95": 0.685333,
+                "p99": 0.818833,
+                "max": 2.143459
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.331042,
+                "p95": 0.62425,
+                "p99": 0.765167,
+                "max": 0.951458
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.327083,
+                "p95": 0.577,
+                "p99": 0.740875,
+                "max": 0.947458
+              }
+            }
+          }
+        }
+      ],
+      "aggregate": {
+        "A": {
+          "reader": {
+            "0": {
+              "count": 8192,
+              "median": 0.358292,
+              "p95": 0.6485,
+              "p99": 0.787083,
+              "max": 3.633959
+            },
+            "1": {
+              "count": 8192,
+              "median": 0.4503545,
+              "p95": 0.691084,
+              "p99": 0.822083,
+              "max": 2.143459
+            }
+          },
+          "writer": {
+            "0": {
+              "count": 2048,
+              "median": 0.32975,
+              "p95": 0.634167,
+              "p99": 0.764167,
+              "max": 1.017208
+            },
+            "1": {
+              "count": 2048,
+              "median": 0.328771,
+              "p95": 0.585708,
+              "p99": 0.740875,
+              "max": 0.947458
+            }
+          }
+        },
+        "B": {
+          "reader": {
+            "0": {
+              "count": 8192,
+              "median": 0.3440835,
+              "p95": 0.621041,
+              "p99": 0.742959,
+              "max": 4.17575
+            },
+            "1": {
+              "count": 8192,
+              "median": 0.42649950000000003,
+              "p95": 0.661,
+              "p99": 0.776875,
+              "max": 3.160458
+            }
+          },
+          "writer": {
+            "0": {
+              "count": 2048,
+              "median": 0.330187,
+              "p95": 0.596625,
+              "p99": 0.730709,
+              "max": 1.382125
+            },
+            "1": {
+              "count": 2048,
+              "median": 0.3314585,
+              "p95": 0.5765,
+              "p99": 0.708125,
+              "max": 1.230292
+            }
+          }
+        }
+      }
+    },
+    "coalesced": {
+      "flag": "coalesced",
+      "cases": [
+        {
+          "variant": "A",
+          "block": 0,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.443229,
+                "p95": 0.675834,
+                "p99": 0.791625,
+                "max": 1.025083
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.387833,
+                "p95": 0.55575,
+                "p99": 0.647667,
+                "max": 0.92275
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.3265,
+                "p95": 0.57375,
+                "p99": 0.76025,
+                "max": 0.90075
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.277,
+                "p95": 0.481334,
+                "p99": 0.559416,
+                "max": 0.694125
+              }
+            }
+          }
+        },
+        {
+          "variant": "B",
+          "block": 1,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.422938,
+                "p95": 0.643709,
+                "p99": 0.76225,
+                "max": 1.319708
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.36741650000000003,
+                "p95": 0.521958,
+                "p99": 0.612709,
+                "max": 0.8095
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.3293125,
+                "p95": 0.566667,
+                "p99": 0.671792,
+                "max": 0.961458
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.272833,
+                "p95": 0.446875,
+                "p99": 0.592875,
+                "max": 0.855291
+              }
+            }
+          }
+        },
+        {
+          "variant": "B",
+          "block": 2,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.426208,
+                "p95": 0.64725,
+                "p99": 0.762791,
+                "max": 1.1025
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.364083,
+                "p95": 0.523834,
+                "p99": 0.617125,
+                "max": 4.579667
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.323854,
+                "p95": 0.547042,
+                "p99": 0.670417,
+                "max": 1.069042
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.270812,
+                "p95": 0.457625,
+                "p99": 0.566875,
+                "max": 1.229042
+              }
+            }
+          }
+        },
+        {
+          "variant": "A",
+          "block": 3,
+          "groups": {
+            "reader": {
+              "0": {
+                "count": 4096,
+                "median": 0.4486875,
+                "p95": 0.674584,
+                "p99": 0.806792,
+                "max": 3.919958
+              },
+              "1": {
+                "count": 4096,
+                "median": 0.3928335,
+                "p95": 0.563959,
+                "p99": 0.661417,
+                "max": 2.015291
+              }
+            },
+            "writer": {
+              "0": {
+                "count": 1024,
+                "median": 0.32735400000000003,
+                "p95": 0.595291,
+                "p99": 0.72325,
+                "max": 2.265375
+              },
+              "1": {
+                "count": 1024,
+                "median": 0.2753545,
+                "p95": 0.480542,
+                "p99": 0.629625,
+                "max": 1.9545
+              }
+            }
+          }
+        }
+      ],
+      "aggregate": {
+        "A": {
+          "reader": {
+            "0": {
+              "count": 8192,
+              "median": 0.44637499999999997,
+              "p95": 0.675,
+              "p99": 0.796,
+              "max": 3.919958
+            },
+            "1": {
+              "count": 8192,
+              "median": 0.3896455,
+              "p95": 0.56025,
+              "p99": 0.653,
+              "max": 2.015291
+            }
+          },
+          "writer": {
+            "0": {
+              "count": 2048,
+              "median": 0.326917,
+              "p95": 0.582417,
+              "p99": 0.752125,
+              "max": 2.265375
+            },
+            "1": {
+              "count": 2048,
+              "median": 0.275708,
+              "p95": 0.481334,
+              "p99": 0.578,
+              "max": 1.9545
+            }
+          }
+        },
+        "B": {
+          "reader": {
+            "0": {
+              "count": 8192,
+              "median": 0.4246045,
+              "p95": 0.644917,
+              "p99": 0.76225,
+              "max": 1.319708
+            },
+            "1": {
+              "count": 8192,
+              "median": 0.36543749999999997,
+              "p95": 0.523375,
+              "p99": 0.614959,
+              "max": 4.579667
+            }
+          },
+          "writer": {
+            "0": {
+              "count": 2048,
+              "median": 0.32633350000000005,
+              "p95": 0.563541,
+              "p99": 0.671709,
+              "max": 1.069042
+            },
+            "1": {
+              "count": 2048,
+              "median": 0.2715835,
+              "p95": 0.450625,
+              "p99": 0.574583,
+              "max": 1.229042
+            }
+          }
+        }
+      }
+    }
+  },
+  "cpp_identical_to_3319": {
+    "src/Access/EffectiveAccessRightsCache.cpp": "0934300bee522fa7da921904b5ddc0f32dd16fe19022a5729749fc25d84b32b8",
+    "src/Access/EffectiveAccessRightsCache.h": "41670d46331efa62342f33e2ca9ddf1cea9cf7b827ef939f1b03f07da8356b6e"
+  },
+  "conclusion_limits": [
+    "The initial historical block lacks per-request stack/lock/host traces; its unique triggering event cannot be reconstructed.",
+    "New runs rule out cache critical sections as the main cause in a reproduced slow block; this is not a universal lock-safety guarantee.",
+    "A tmpfs baseline can also have a 2ms P99. Neither the new cache nor overlay access-file I/O is necessary for such tails.",
+    "An initial snapshot shows nonexclusive host CPU and substantial compressed memory; it does not prove the historical block was caused by a specific app or memory compression.",
+    "Profiling includes helper-thread waits; inclusive percentages overlap and do not represent fractions of a request wall clock."
+  ]
+}

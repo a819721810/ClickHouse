@@ -1,0 +1,22 @@
+{
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-21T09:48:48.270078218Z",
+    "FinishedAt": "2026-10-21T10:08:48.426212343Z"
+  },
+  "phase": "built",
+  "source_sha": "3319c0bf1944237c0ed87eac0fb0affc61a7d609",
+  "binary": "/Users/tangmiao/Codes/C++Codes/ClickHouse/tmp/pr117270-optimized2-20261021/bin/clickhouse-D",
+  "binary_sha256": "af3fe9d1edf52b94da20c43b2cdf4d84b5c91d0fd0ffb77448ce62900691ef61",
+  "binary_bytes": 4527636248,
+  "baseline_sha256": "d6ee2536bf9caba820c675a7745ab4190229434dab8b15b7eae03e822efaa562",
+  "input_alias": "clickhouse-B is a hard link to optimized clickhouse-D; original PR binary is preserved in the previous benchmark root"
+}

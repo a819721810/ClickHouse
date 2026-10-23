@@ -1,0 +1,14 @@
+{
+  "scope": "Remove unreachable cursor adjustment and clarify per-flag atomic reads; no new full-server build or performance measurement.",
+  "component_status": "passed",
+  "component_log": "/Users/tangmiao/.codex/worktrees/0960/ClickHouse/tmp/pr117270-tail-investigation-20261023/build/test_component_clarity.log",
+  "source_hashes": {
+    "src/Access/EffectiveAccessRightsCache.h": "41670d46331efa62342f33e2ca9ddf1cea9cf7b827ef939f1b03f07da8356b6e",
+    "src/Access/EffectiveAccessRightsCache.cpp": "0daed2573e86c91578dfac7e5fe0bf8afdc3e1c49cfdf9d54e093c7094e688f1",
+    "src/Access/ImplicitExpansionSettings.h": "8978f37ff3bab38c0f25e1df36fbb6fd3ff4a1b8d4ed2d57055c08f4b2accc3f",
+    "base/base/UUID.h": "39cd6870c7456b8bfc5df3659a07301c1849ea54aaebc238c5861ce53cc5e4b8"
+  },
+  "branch": "codex/cache-review-clarity-20261023",
+  "known_full_server_commit": "3319c0bf1944237c0ed87eac0fb0affc61a7d609",
+  "commit": "6749388647e0b659f18561a172a0eb19cd2db20f"
+}

@@ -1,0 +1,2 @@
+CACHE_INVARIANTS_PASS settings=16 address_reuse=1 retired_entries=4096 concurrent_operations=320000 user_version_replacement=1
+OPTIMIZED_COMPONENT_PASS sanitized

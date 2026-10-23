@@ -1,0 +1,75 @@
+{
+  "source_head": "6749388647e0b659f18561a172a0eb19cd2db20f",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 27,
+      "sha256": "cb7005d037001b054eca617e746830d21d793dfb8db8316372d8087f8c7ef385"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1197,
+      "sha256": "96c1172038b09b1cad19de89a4ae60c7156f4257f5a005c208b1d412895f6c00"
+    },
+    {
+      "path": "benchmark-samples.csv",
+      "bytes": 58806,
+      "sha256": "13851e209b19c83c4e11e9d35ce65b77b9ec495f5fd12f2ba74a2b4584bd525c"
+    },
+    {
+      "path": "benchmark.md",
+      "bytes": 11148,
+      "sha256": "178bc7e54b18716e094e733d7476a09e28c8ea326cb92e7b745b3d3fb8f8de52"
+    },
+    {
+      "path": "build-receipt.json",
+      "bytes": 839,
+      "sha256": "5c95732b3153dbd253e58c2e4d454fb8d4d66faf198992dca176e9477e3e9d27"
+    },
+    {
+      "path": "clarity-validation.json",
+      "bytes": 963,
+      "sha256": "ac1e6eb34f2d21445684fa4c1becf0bccbd1202c71747928546784a65ba4d0ba"
+    },
+    {
+      "path": "component-clarity-output.txt",
+      "bytes": 162,
+      "sha256": "6e2769a3f472e58dbbe2186554a58e314514d2648d4589399f06c9007bb57670"
+    },
+    {
+      "path": "optimized-benchmark-evidence.tar.gz",
+      "bytes": 3586324,
+      "sha256": "26f826a6ff9c88a1a9e955e4e1b8ff989a402118afdc27626e735985e86208b7"
+    },
+    {
+      "path": "optimized-summary.json",
+      "bytes": 26406,
+      "sha256": "fb9aebac4ecdc9e6347a7e7cc613fa45220174dcf1123d302b2b4c75786bdb26"
+    },
+    {
+      "path": "tail-investigation-summary.json",
+      "bytes": 28144,
+      "sha256": "d249f8b6ba82f61c260aa8c3928e5dee6705abbd868776f2c6893c70ace9caf6"
+    },
+    {
+      "path": "tail-investigation-zh.md",
+      "bytes": 9194,
+      "sha256": "663c2d81c89887ebe2dc09e887aabb96fd725d6be5e5b82a31f5ff32708b1557"
+    },
+    {
+      "path": "tail-investigation.md",
+      "bytes": 5788,
+      "sha256": "9b096f4c77cbe6e2b0d7701b19e9879791b2f76de8451d44b069ad8912390b25"
+    },
+    {
+      "path": "tail-latency-evidence.tar.gz",
+      "bytes": 38787731,
+      "sha256": "0ace4eb9a5c65945b1264e7a2ba12944542c9c4fa2986c37a3c959bbffd037ce"
+    },
+    {
+      "path": "tail-per-case-results.csv",
+      "bytes": 15902,
+      "sha256": "b2e5b60fc829a161e17768e9283d675382181342ee067a8963275d9b390fdd89"
+    }
+  ]
+}
